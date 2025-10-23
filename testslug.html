@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Slug Generator — Maspuk & Azarima</title>
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        background: #f8fafc;
+        color: #111827;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+        min-height: 100vh;
+        padding: 2rem;
+      }
+      .container {
+        max-width: 600px;
+        width: 100%;
+        background: white;
+        border-radius: 1rem;
+        padding: 2rem;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        text-align: center;
+        margin-bottom: 1rem;
+      }
+      textarea {
+        width: 100%;
+        padding: 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+        resize: none;
+        font-size: 1rem;
+      }
+      button {
+        background-color: #111827;
+        color: white;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 16px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      button:hover {
+        opacity: 0.9;
+      }
+      .result {
+        margin-top: 1rem;
+        background: #f1f5f9;
+        padding: 1rem;
+        border-radius: 6px;
+        word-break: break-all;
+      }
+      .actions {
+        display: flex;
+        gap: 0.5rem;
+        margin-top: 0.75rem;
+        flex-wrap: wrap;
+      }
+      .copy-success {
+        color: green;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Slug Generator</h1>
+      <p>Masukkan nama atau teks undangan:</p>
+      <textarea
+        id="inputText"
+        rows="3"
+        placeholder="Contoh: Maspuk Al Hamdani"
+      ></textarea>
+      <button onclick="generateSlug()">Generate Link</button>
+
+      <div id="output" class="result" style="display: none">
+        <p><strong>Nama / Judul:</strong> <span id="slugResult"></span></p>
+        <p><strong>Link Undangan:</strong> <span id="linkResult"></span></p>
+        <div class="actions">
+          <button onclick="copyMessage()">Salin Pesan Lengkap</button>
+          <button onclick="shareToWhatsApp()">Share WhatsApp</button>
+          <button onclick="shareToFacebook()">Share Facebook</button>
+          <button onclick="shareToInstagram()">Share Instagram</button>
+        </div>
+        <div id="copyMsg" class="copy-success" style="display: none">
+          Pesan berhasil disalin ✅
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const BASE_URL = "https://maspuk-azarima.vercel.app/?to=";
+      let currentName = "";
+      let currentLink = "";
+
+      function generateSlug() {
+        const input = document.getElementById("inputText").value.trim();
+        if (!input) return alert("Silakan isi teks atau nama terlebih dahulu!");
+
+        const encodedSlug = encodeURIComponent(input);
+        const finalLink = `${BASE_URL}${encodedSlug}`;
+
+        currentName = input;
+        currentLink = finalLink;
+
+        document.getElementById("slugResult").innerText = input;
+        document.getElementById("linkResult").innerText = finalLink;
+        document.getElementById("output").style.display = "block";
+        document.getElementById("copyMsg").style.display = "none";
+      }
+
+      function getMessage() {
+        return (
+          `Tanpa mengurangi rasa hormat, perkenankan kami mengundang ${currentName} untuk menghadiri acara kami.\n\n` +
+          `Berikut link undangan kami, untuk info lengkap dari acara bisa kunjungi :\n${currentLink}\n\n` +
+          `Merupakan suatu kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan untuk hadir dan memberikan doa restu.\n\n` +
+          `Mohon maaf perihal undangan hanya di bagikan melalui pesan ini.\n\n` +
+          `Terima kasih banyak atas perhatiannya.\n\n` +
+          `"Bila ada 365 hari dalam setahunmu, sisihkan sehari untuk datang merayakan acara kami." ✨`
+        );
+      }
+
+      function copyMessage() {
+        if (!currentLink) return;
+        const msg = getMessage();
+        navigator.clipboard.writeText(msg).then(() => {
+          const alertMsg = document.getElementById("copyMsg");
+          alertMsg.style.display = "block";
+          setTimeout(() => (alertMsg.style.display = "none"), 2000);
+        });
+      }
+
+      function shareToWhatsApp() {
+        if (!currentLink) return;
+        const msg = encodeURIComponent(getMessage());
+        const url = `https://wa.me/?text=${msg}`;
+        window.open(url, "_blank");
+      }
+
+      function shareToFacebook() {
+        if (!currentLink) return;
+        const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(
+          currentLink
+        )}`;
+        window.open(url, "_blank");
+      }
+
+      function shareToInstagram() {
+        if (!currentLink) return;
+        alert(
+          "Instagram tidak mendukung share link langsung, pesan telah disalin untuk kamu tempel secara manual."
+        );
+        copyMessage();
+      }
+    </script>
+  </body>
+</html>
